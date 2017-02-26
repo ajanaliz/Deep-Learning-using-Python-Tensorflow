@@ -1,6 +1,3 @@
-# https://deeplearningcourses.com/c/deep-learning-convolutional-neural-networks-theano-tensorflow
-# https://udemy.com/deep-learning-convolutional-neural-networks-theano-tensorflow
-
 import numpy as np
 # from scipy.signal import convolve2d
 import matplotlib.pyplot as plt

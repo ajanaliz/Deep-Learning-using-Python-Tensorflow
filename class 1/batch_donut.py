@@ -4,9 +4,6 @@
 # problem, let's try learning from randomly selected batches.
 # we can consistently get up to the high 90s with this method.
 #
-# the notes for this class can be found at: 
-# https://deeplearningcourses.com/c/data-science-deep-learning-in-python
-# https://www.udemy.com/data-science-deep-learning-in-python
 
 import numpy as np
 from sklearn.utils import shuffle

@@ -1,18 +1,14 @@
-# In this file we compare the progression of the cost function vs. iteration
+# In this file I compare the progression of the cost function vs. iteration
 # for 3 cases:
 # 1) full gradient descent
 # 2) batch gradient descent
 # 3) stochastic gradient descent
 #
-# We use the PCA-transformed data to keep the dimensionality down (D=300)
+# I use the PCA-transformed data to keep the dimensionality down (D=300)
 # I've tailored this example so that the training time for each is feasible.
-# So what we are really comparing is how quickly each type of GD can converge,
+# So what I am really comparing is how quickly each type of GD can converge,
 # (but not actually waiting for convergence) and what the cost looks like at
 # each iteration.
-#
-# For the class Data Science: Practical Deep Learning Concepts in Theano and TensorFlow
-# https://deeplearningcourses.com/c/data-science-deep-learning-in-theano-tensorflow
-# https://www.udemy.com/data-science-deep-learning-in-theano-tensorflow
 
 import numpy as np
 import pandas as pd

@@ -1,7 +1,4 @@
 # Some utility functions we need for the class.
-# For the class Data Science: Practical Deep Learning Concepts in Theano and TensorFlow
-# https://deeplearningcourses.com/c/data-science-deep-learning-in-theano-tensorflow
-# https://www.udemy.com/data-science-deep-learning-in-theano-tensorflow
 
 # Note: run this from the current folder it is in.
 

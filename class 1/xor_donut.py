@@ -1,9 +1,7 @@
 # revisiting the XOR and donut problems to show how features
 # can be learned automatically using neural networks.
 #
-# the notes for this class can be found at: 
-# https://deeplearningcourses.com/c/data-science-deep-learning-in-python
-# https://www.udemy.com/data-science-deep-learning-in-python
+
 
 import numpy as np
 import matplotlib.pyplot as plt
