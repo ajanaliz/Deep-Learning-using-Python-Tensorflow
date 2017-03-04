@@ -5,18 +5,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-Nclass = 500
+Nclass = 500000
 
-X1 = np.random.randn(Nclass, 2) + np.array([0, -2])
-X2 = np.random.randn(Nclass, 2) + np.array([2, 2])
-X3 = np.random.randn(Nclass, 2) + np.array([-2, 2])
+# generate 3 gaussian clouds
+X1 = np.random.randn(Nclass, 2) + np.array([0, -2]) # first gaussian cloud is gonna be centered at (0,-2)
+X2 = np.random.randn(Nclass, 2) + np.array([2, 2]) # second gaussian cloud is gonna be centered at (2,2)
+X3 = np.random.randn(Nclass, 2) + np.array([-2, 2]) # third gaussian cloud is gonna be centered at (-2,2)
 X = np.vstack([X1, X2, X3])
 
 Y = np.array([0]*Nclass + [1]*Nclass + [2]*Nclass)
 
 # let's see what it looks like
-plt.scatter(X[:,0], X[:,1], c=Y, s=100, alpha=0.5)
-plt.show()
+# plt.scatter(X[:,0], X[:,1], c=Y, s=100, alpha=0.5)
+# plt.show()
 
 # randomly initialize weights
 D = 2 # dimensionality of input
