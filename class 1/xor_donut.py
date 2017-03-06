@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # for binary classification! no softmax here
-
+# we're basically doing 2 sigmoids in a row in the forward function
 def forward(X, W1, b1, W2, b2):
     # Z = 1 / (1 + np.exp( -(X.dot(W1) + b1) ))
     Z = np.tanh(X.dot(W1) + b1)
@@ -15,7 +15,7 @@ def forward(X, W1, b1, W2, b2):
     Y = 1 / (1 + np.exp(-activation))
     return Y, Z
 
-
+# the predict function is no longer argmax, its just round
 def predict(X, W1, b1, W2, b2):
     Y, _ = forward(X, W1, b1, W2, b2)
     return np.round(Y)
@@ -41,7 +41,7 @@ def derivative_b1(Z, T, Y, W2):
     return dZ.sum(axis=0)
 
 
-def cost(T, Y):
+def cost(T, Y): # binary cross-entropy
     # tot = 0
     # for n in xrange(len(T)):
     #     if T[n] == 1:
@@ -54,8 +54,10 @@ def cost(T, Y):
 
 
 def test_xor():
+    # code for representing the xor data:
     X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
     Y = np.array([0, 1, 1, 0])
+    # neural network with 5 hidden units
     W1 = np.random.randn(2, 5)
     b1 = np.zeros(5)
     W2 = np.random.randn(5)
@@ -135,8 +137,8 @@ def test_donut():
 
 
 if __name__ == '__main__':
-    # test_xor()
-    test_donut()
+    test_xor()
+    #test_donut()
 
     
 

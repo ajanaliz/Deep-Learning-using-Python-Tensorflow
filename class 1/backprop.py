@@ -37,7 +37,7 @@ def derivative_w2(Z, T, Y):
     # for n in xrange(N):
     #     for m in xrange(M):
     #         for k in xrange(K):
-    #             ret1[m,k] += (T[n,k] - Y[n,k])*Z[n,m]
+    #             ret1[m,k] += (T[n,k] - Y[n,k])*Z[n,m] # since we're doing gradient ascent.
 
     # # a bit faster - let's not loop over m
     # ret2 = np.zeros((M, K))
@@ -90,7 +90,7 @@ def derivative_b1(T, Y, W2, Z):
     return ((T - Y).dot(W2.T) * Z * (1 - Z)).sum(axis=0)
 
 
-def cost(T, Y):
+def cost(T, Y): # directly from the definition.
     tot = T * np.log(Y)
     return tot.sum()
 
@@ -111,7 +111,7 @@ def main():
     N = len(Y)
     # turn Y into an indicator matrix for training
     T = np.zeros((N, K))
-    for i in xrange(N):
+    for i in xrange(N): # one-hot encoding for the target matrix
         T[i, Y[i]] = 1
 
     # let's see what it looks like
@@ -127,18 +127,20 @@ def main():
     learning_rate = 10e-7
     costs = []
     for epoch in xrange(100000):
+        # this version of the forward propagation not only returns the output, it also returns the hidden layer,
+        # since it is required for calculating the gradient.
         output, hidden = forward(X, W1, b1, W2, b2)
-        if epoch % 100 == 0:
-            c = cost(T, output)
-            P = np.argmax(output, axis=1)
-            r = classification_rate(Y, P)
+        if epoch % 100 == 0: # every 100 epochs
+            c = cost(T, output) # calculate the cost.
+            P = np.argmax(output, axis=1) # get the predictions.
+            r = classification_rate(Y, P) # calculate the classification rate.
             print "cost:", c, "classification_rate:", r
             costs.append(c)
 
         # this is gradient ASCENT, not DESCENT
         # be comfortable with both!
         # oldW2 = W2.copy()
-        W2 += learning_rate * derivative_w2(hidden, T, output)
+        W2 += learning_rate * derivative_w2(hidden, T, output) # derivative with respect to w2.
         b2 += learning_rate * derivative_b2(T, output)
         W1 += learning_rate * derivative_w1(X, hidden, T, output, W2)
         b1 += learning_rate * derivative_b1(T, output, W2, hidden)
