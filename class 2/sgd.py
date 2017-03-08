@@ -20,8 +20,9 @@ from util import get_transformed_data, forward, error_rate, cost, gradW, gradb, 
 
 
 def main():
+    # get PCA transformed data
     X, Y, _, _ = get_transformed_data()
-    X = X[:, :300]
+    X = X[:, :300] # the first 300 features
 
     # normalize X first
     mu = X.mean(axis=0)
@@ -39,7 +40,7 @@ def main():
     Ytest_ind = y2indicator(Ytest)
 
     # 1. full
-    W = np.random.randn(D, 10) / 28
+    W = np.random.randn(D, 10) / 28 # we're setting our initial weights to be pretty small, proportional to the square root of the dimensionality
     b = np.zeros(10)
     LL = []
     lr = 0.0001
@@ -52,10 +53,11 @@ def main():
         b += lr*(gradb(Ytrain_ind, p_y) - reg*b)
         
 
+        # do a forward pass on the test set so that we can calculate the cost on the test set and then plot that
         p_y_test = forward(Xtest, W, b)
         ll = cost(p_y_test, Ytest_ind)
         LL.append(ll)
-        if i % 10 == 0:
+        if i % 10 == 0: # calculate the error rate on every 10 iterations
             err = error_rate(p_y_test, Ytest)
             print "Cost at iteration %d: %.6f" % (i, ll)
             print "Error rate:", err
@@ -73,10 +75,14 @@ def main():
 
     t0 = datetime.now()
     for i in xrange(1): # takes very long since we're computing cost for 41k samples
+        # on each pass, we typically want to shuffle through the training data and the labels
         tmpX, tmpY = shuffle(Xtrain, Ytrain_ind)
+        # we're actually only going to go through 500 samples because its slow
         for n in xrange(min(N, 500)): # shortcut so it won't take so long...
+            # reshape x into a 2 dimensional matrix
             x = tmpX[n,:].reshape(1,D)
             y = tmpY[n,:].reshape(1,10)
+            # forward pass to get the output
             p_y = forward(x, W, b)
 
             W += lr*(gradW(y, p_y, x) - reg*W)
@@ -86,7 +92,7 @@ def main():
             ll = cost(p_y_test, Ytest_ind)
             LL_stochastic.append(ll)
 
-            if n % (N/2) == 0:
+            if n % (N/2) == 0: # calculate the error rate once for every N/2 samples
                 err = error_rate(p_y_test, Ytest)
                 print "Cost at iteration %d: %.6f" % (i, ll)
                 print "Error rate:", err
@@ -108,17 +114,20 @@ def main():
     for i in xrange(50):
         tmpX, tmpY = shuffle(Xtrain, Ytrain_ind)
         for j in xrange(n_batches):
+            # get the current batches input and targets
             x = tmpX[j*batch_sz:(j*batch_sz + batch_sz),:]
             y = tmpY[j*batch_sz:(j*batch_sz + batch_sz),:]
+            # forward pass to get the output predictions
             p_y = forward(x, W, b)
 
+            # Gradient descent
             W += lr*(gradW(y, p_y, x) - reg*W)
             b += lr*(gradb(y, p_y) - reg*b)
 
             p_y_test = forward(Xtest, W, b)
             ll = cost(p_y_test, Ytest_ind)
             LL_batch.append(ll)
-            if j % (n_batches/2) == 0:
+            if j % (n_batches/2) == 0: # print error rate at every (number of batches)/2 iterations
                 err = error_rate(p_y_test, Ytest)
                 print "Cost at iteration %d: %.6f" % (i, ll)
                 print "Error rate:", err

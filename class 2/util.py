@@ -1,23 +1,29 @@
 # Some utility functions we need for the class.
 
 # Note: run this from the current folder it is in.
-
+"""the raw data is 28x28 images flatened to 1x784 vectors"""
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 
+"""we also do PCA on this raw data, and do logistic regression again
+on the top 300 principle components"""
+
 
 def get_transformed_data():
+    """this function gets the transformed data using PCA. and it will return
+    the PCA model which contains the transformation matrix, and the mean of
+    X(mu) which is subtracted from X before doing PCA"""
     print "Reading in and transforming data..."
-    df = pd.read_csv('../large_files/train.csv')
+    df = pd.read_csv('../mnist_csv/train.csv')
     data = df.as_matrix().astype(np.float32)
     np.random.shuffle(data)
 
     X = data[:, 1:]
     mu = X.mean(axis=0)
-    X = X - mu # center the data
+    X = X - mu  # center the data
     pca = PCA()
     Z = pca.fit_transform(X)
     Y = data[:, 0]
@@ -26,21 +32,28 @@ def get_transformed_data():
 
     return Z, Y, pca, mu
 
+    """this function gets the raw X, which is the raw pixels of the image
+    and we normalize it by subtracting the mean(mu) and dividing by the
+    standard deviation."""
+
 
 def get_normalized_data():
     print "Reading in and transforming data..."
-    df = pd.read_csv('../large_files/train.csv')
+    df = pd.read_csv('../mnist_csv/train.csv')
     data = df.as_matrix().astype(np.float32)
     np.random.shuffle(data)
     X = data[:, 1:]
     mu = X.mean(axis=0)
     std = X.std(axis=0)
     np.place(std, std == 0, 1)
-    X = (X - mu) / std # normalize the data
+    X = (X - mu) / std  # normalize the data
     Y = data[:, 0]
     return X, Y
 
 
+"""heres a function that will plot the cumulative variance after doing PCA.
+this justifies taking the top 300 principle components because it contains
+over 95% of the variance of the original data."""
 def plot_cumulative_variance(pca):
     P = []
     for p in pca.explained_variance_ratio_:
@@ -53,6 +66,7 @@ def plot_cumulative_variance(pca):
     return P
 
 
+"""forward performs logistic regression"""
 def forward(X, W, b):
     # softmax
     a = X.dot(W) + b
@@ -85,15 +99,15 @@ def cost(p_y, t):
     tot = t * np.log(p_y)
     return -tot.sum()
 
-
+# calculate the gradiant of the weight matrix.
 def gradW(t, y, X):
     return X.T.dot(t - y)
 
-
+# calculate the gradient of the bias vector.
 def gradb(t, y):
     return (t - y).sum(axis=0)
 
-
+# this function changes y into an indicator matrix of size Nx10
 def y2indicator(y):
     N = len(y)
     y = y.astype(np.int32)
@@ -119,10 +133,10 @@ def benchmark_full():
     # std = X.std(axis=0)
     # X = (X - mu) / std
 
-    Xtrain = X[:-1000,]
+    Xtrain = X[:-1000, ]
     Ytrain = Y[:-1000]
-    Xtest  = X[-1000:,]
-    Ytest  = Y[-1000:]
+    Xtest = X[-1000:, ]
+    Ytest = Y[-1000:]
 
     # convert Ytrain and Ytest to (N x K) matrices of indicator variables
     N, D = Xtrain.shape
@@ -154,12 +168,12 @@ def benchmark_full():
         p_y_test = forward(Xtest, W, b)
         lltest = cost(p_y_test, Ytest_ind)
         LLtest.append(lltest)
-        
+
         err = error_rate(p_y_test, Ytest)
         CRtest.append(err)
 
-        W += lr*(gradW(Ytrain_ind, p_y, Xtrain) - reg*W)
-        b += lr*(gradb(Ytrain_ind, p_y) - reg*b)
+        W += lr * (gradW(Ytrain_ind, p_y, Xtrain) - reg * W)
+        b += lr * (gradb(Ytrain_ind, p_y) - reg * b)
         if i % 10 == 0:
             print "Cost at iteration %d: %.6f" % (i, ll)
             print "Error rate:", err
@@ -183,10 +197,10 @@ def benchmark_pca():
     X = (X - mu) / std
 
     print "Performing logistic regression..."
-    Xtrain = X[:-1000,]
+    Xtrain = X[:-1000, ]
     Ytrain = Y[:-1000]
-    Xtest  = X[-1000:,]
-    Ytest  = Y[-1000:]
+    Xtest = X[-1000:, ]
+    Ytest = Y[-1000:]
 
     N, D = Xtrain.shape
     Ytrain_ind = np.zeros((N, 10))
@@ -220,8 +234,8 @@ def benchmark_pca():
         err = error_rate(p_y_test, Ytest)
         CRtest.append(err)
 
-        W += lr*(gradW(Ytrain_ind, p_y, Xtrain) - reg*W)
-        b += lr*(gradb(Ytrain_ind, p_y) - reg*b)
+        W += lr * (gradW(Ytrain_ind, p_y, Xtrain) - reg * W)
+        b += lr * (gradb(Ytrain_ind, p_y) - reg * b)
         if i % 10 == 0:
             print "Cost at iteration %d: %.6f" % (i, ll)
             print "Error rate:", err
@@ -236,6 +250,5 @@ def benchmark_pca():
 
 
 if __name__ == '__main__':
-    benchmark_pca()
-    # benchmark_full()
-
+    # benchmark_pca()
+     benchmark_full()
