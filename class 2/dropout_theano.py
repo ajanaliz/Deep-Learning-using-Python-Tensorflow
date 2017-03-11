@@ -27,7 +27,7 @@ class HiddenLayer(object):
 
 
 class ANN(object):
-    def __init__(self, hidden_layer_sizes, p_keep):
+    def __init__(self, hidden_layer_sizes, p_keep):  # p_keep stands for the probability of keeping a node. It's actually a list of probabilities because each layer can have its own probability of keeping.
         self.hidden_layer_sizes = hidden_layer_sizes
         self.dropout_rates = p_keep
 
@@ -77,12 +77,15 @@ class ANN(object):
         cost = -T.mean(T.log(pY_train[T.arange(thY.shape[0]), thY]))
 
         updates = [
-            (c, decay*c + (1-decay)*T.grad(cost, p)*T.grad(cost, p)) for p, c in zip(self.params, cache)
-        ] + [
-            (p, p + mu*dp - learning_rate*T.grad(cost, p)/T.sqrt(c + 10e-10)) for p, c, dp in zip(self.params, cache, dparams)
-        ] + [
-            (dp, mu*dp - learning_rate*T.grad(cost, p)/T.sqrt(c + 10e-10)) for p, c, dp in zip(self.params, cache, dparams)
-        ]
+                      (c, decay * c + (1 - decay) * T.grad(cost, p) * T.grad(cost, p)) for p, c in
+                      zip(self.params, cache)
+                      ] + [
+                      (p, p + mu * dp - learning_rate * T.grad(cost, p) / T.sqrt(c + 10e-10)) for p, c, dp in
+                      zip(self.params, cache, dparams)
+                      ] + [
+                      (dp, mu * dp - learning_rate * T.grad(cost, p) / T.sqrt(c + 10e-10)) for p, c, dp in
+                      zip(self.params, cache, dparams)
+                      ]
 
         # momentum only
         # updates = [
@@ -107,8 +110,8 @@ class ANN(object):
         for i in xrange(epochs):
             X, Y = shuffle(X, Y)
             for j in xrange(n_batches):
-                Xbatch = X[j*batch_sz:(j*batch_sz+batch_sz)]
-                Ybatch = Y[j*batch_sz:(j*batch_sz+batch_sz)]
+                Xbatch = X[j * batch_sz:(j * batch_sz + batch_sz)]
+                Ybatch = Y[j * batch_sz:(j * batch_sz + batch_sz)]
 
                 train_op(Xbatch, Ybatch)
 
@@ -117,7 +120,7 @@ class ANN(object):
                     costs.append(c)
                     e = error_rate(Yvalid, p)
                     print "i:", i, "j:", j, "nb:", n_batches, "cost:", c, "error rate:", e
-        
+
         if show_fig:
             plt.plot(costs)
             plt.show()
@@ -125,14 +128,14 @@ class ANN(object):
     def forward_train(self, X):
         Z = X
         for h, p in zip(self.hidden_layers, self.dropout_rates[:-1]):
-            mask = self.rng.binomial(n=1, p=p, size=Z.shape)
+            mask = self.rng.binomial(n=1, p=p, size=Z.shape) # generate mask using random streams object. we pass in n=1, meaning its like doing one coin flip. the probability of heads is p_keep, and the size should be the same size as what we're about to multiply by. we do this at every layer and then we do the softmax layer.
             Z = mask * Z
             Z = h.forward(Z)
         mask = self.rng.binomial(n=1, p=self.dropout_rates[-1], size=Z.shape)
         Z = mask * Z
         return T.nnet.softmax(Z.dot(self.W) + self.b)
 
-    def forward_predict(self, X):
+    def forward_predict(self, X): # here there's no mask, we just multiply each layer by its p_keep value --> this is why its convenient to use the probability of keep rather than the probability of drop.
         Z = X
         for h, p in zip(self.hidden_layers, self.dropout_rates[:-1]):
             Z = h.forward(p * Z)

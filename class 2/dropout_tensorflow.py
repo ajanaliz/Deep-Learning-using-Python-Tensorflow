@@ -88,7 +88,7 @@ class ANN(object):
         # no need to define different functions for train and predict
         # tf.nn.dropout takes care of the differences for us
         Z = X
-        Z = tf.nn.dropout(Z, self.dropout_rates[0])
+        Z = tf.nn.dropout(Z, self.dropout_rates[0]) # takes the input matrix and the probabiliy of keep
         for h, p in zip(self.hidden_layers, self.dropout_rates[1:]):
             Z = h.forward(Z)
             Z = tf.nn.dropout(Z, p)
