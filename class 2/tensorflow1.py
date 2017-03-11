@@ -21,12 +21,12 @@ v = tf.placeholder(tf.float32)
 w = tf.matmul(A, v)
 
 
-# similar to Theano, you need to "feed" the variables values.
+# similar to Theano, you need to "feed" the variables values. so A and v don't yet have values
 # In TensorFlow you do the "actual work" in a "session".
 
 with tf.Session() as session:
     # the values are fed in via the appropriately named argument "feed_dict"
-    # v needs to be of shape=(5, 1) not just shape=(5,)
+    # v needs to be of shape=(5, 1) not just shape=(5,) [as we would do in numpy]
     # it's more like "real" matrix multiplication
     output = session.run(w, feed_dict={A: np.random.randn(5, 5), v: np.random.randn(5, 1)})
 
@@ -65,7 +65,7 @@ cost = u*u + u + 1.0
 
 # One difference between Theano and TensorFlow is that you don't write the updates
 # yourself in TensorFlow. You choose an optimizer that implements the algorithm you want.
-# 0.3 is the learning rate. Documentation lists the params.
+# 0.3 is the learning rate. read Documentation, if you wanna know more about the params.
 train_op = tf.train.GradientDescentOptimizer(0.3).minimize(cost)
 
 # let's run a session again

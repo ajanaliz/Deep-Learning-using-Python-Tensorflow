@@ -24,22 +24,22 @@ v_val = np.array([5,6])
 w_val = matrix_times_vector(A_val, v_val)
 print w_val
 
-# let's create a shared variable to we can do gradient descent
+# let's create a shared variable so we can do gradient descent
 # this adds another layer of complexity to the theano function
 
 x = theano.shared(20.0, 'x')
 
 # the first argument is its initial value, the second is its name
 
-# a cost function that has a minimum value
+# a cost function that has a global minimum value
 cost = x*x + x + 1
 
 # in theano, you don't have to compute gradients yourself!
 x_update = x - 0.3*T.grad(cost, x)
 
 # x is not an "input", it's a thing you update
-# in later examples, data and labels would go into the inputs
-# and model params would go in the updates
+# in later examples, data and labels would go into the inputs argument of the train function
+# and model params would go in the updates argument of the train function
 # updates takes in a list of tuples, each tuple has 2 things in it:
 # 1) the shared variable to update, 2) the update expression
 train = theano.function(inputs=[], outputs=cost, updates=[(x, x_update)])

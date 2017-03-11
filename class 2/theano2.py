@@ -28,10 +28,10 @@ def main():
     lr = 0.00004
     reg = 0.01
 
-    Xtrain = X[:-1000,]
+    Xtrain = X[:-1000, ]
     Ytrain = Y[:-1000]
-    Xtest  = X[-1000:,]
-    Ytest  = Y[-1000:]
+    Xtest = X[-1000:, ]
+    Ytest = Y[-1000:]
     Ytrain_ind = y2indicator(Ytrain)
     Ytest_ind = y2indicator(Ytest)
 
@@ -47,19 +47,21 @@ def main():
     b2_init = np.zeros(K)
 
     # step 2: define theano variables and expressions
-    thX = T.matrix('X')
-    thT = T.matrix('T')
+    thX = T.matrix('X')  # theano placeholder for X
+    thT = T.matrix('T')  # theano placeholder for the Targets
+    # all the parameters will be shared variables
     W1 = theano.shared(W1_init, 'W1')
     b1 = theano.shared(b1_init, 'b1')
     W2 = theano.shared(W2_init, 'W2')
     b2 = theano.shared(b2_init, 'b2')
 
+    # placeholders for Z and Y
     # we can use the built-in theano functions to do relu and softmax
-    thZ = relu( thX.dot(W1) + b1 ) # relu is new in version 0.7.1 but just in case you don't have it
-    thY = T.nnet.softmax( thZ.dot(W2) + b2 )
+    thZ = relu(thX.dot(W1) + b1)  # relu is new in version 0.7.1 but just in case you don't have it, we've written it ourselves
+    thY = T.nnet.softmax(thZ.dot(W2) + b2)
 
     # define the cost function and prediction
-    cost = -(thT * T.log(thY)).sum() + reg*((W1*W1).sum() + (b1*b1).sum() + (W2*W2).sum() + (b2*b2).sum())
+    cost = -(thT * T.log(thY)).sum() + reg * ((W1 * W1).sum() + (b1 * b1).sum() + (W2 * W2).sum() + (b2 * b2).sum())
     prediction = T.argmax(thY, axis=1)
 
     # step 3: training expressions and functions
@@ -68,12 +70,12 @@ def main():
     # update_b1 = b1 - lr*(T.grad(cost, b1) + reg*b1)
     # update_W2 = W2 - lr*(T.grad(cost, W2) + reg*W2)
     # update_b2 = b2 - lr*(T.grad(cost, b2) + reg*b2)
-    update_W1 = W1 - lr*T.grad(cost, W1)
-    update_b1 = b1 - lr*T.grad(cost, b1)
-    update_W2 = W2 - lr*T.grad(cost, W2)
-    update_b2 = b2 - lr*T.grad(cost, b2)
+    update_W1 = W1 - lr * T.grad(cost, W1)
+    update_b1 = b1 - lr * T.grad(cost, b1)
+    update_W2 = W2 - lr * T.grad(cost, W2)
+    update_b2 = b2 - lr * T.grad(cost, b2)
 
-    train = theano.function(
+    train = theano.function( # this function has no outputs
         inputs=[thX, thT],
         updates=[(W1, update_W1), (b1, update_b1), (W2, update_W2), (b2, update_b2)],
     )
@@ -87,8 +89,8 @@ def main():
     LL = []
     for i in xrange(max_iter):
         for j in xrange(n_batches):
-            Xbatch = Xtrain[j*batch_sz:(j*batch_sz + batch_sz),]
-            Ybatch = Ytrain_ind[j*batch_sz:(j*batch_sz + batch_sz),]
+            Xbatch = Xtrain[j * batch_sz:(j * batch_sz + batch_sz), ]
+            Ybatch = Ytrain_ind[j * batch_sz:(j * batch_sz + batch_sz), ]
 
             train(Xbatch, Ybatch)
             if j % print_period == 0:

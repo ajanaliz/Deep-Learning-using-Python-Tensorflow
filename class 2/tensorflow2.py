@@ -49,9 +49,10 @@ def main():
     b3_init = np.zeros(K)
 
 
-    # define variables and expressions
+    # define our tensorflow variables and expressions
     X = tf.placeholder(tf.float32, shape=(None, D), name='X')
     T = tf.placeholder(tf.float32, shape=(None, K), name='T')
+    # create tensorflow variables for all our parameters
     W1 = tf.Variable(W1_init.astype(np.float32))
     b1 = tf.Variable(b1_init.astype(np.float32))
     W2 = tf.Variable(W2_init.astype(np.float32))
@@ -75,7 +76,7 @@ def main():
     train_op = tf.train.RMSPropOptimizer(lr, decay=0.99, momentum=0.9).minimize(cost)
 
     # we'll use this to calculate the error rate
-    predict_op = tf.argmax(Yish, 1)
+    predict_op = tf.argmax(Yish, 1) # second argument stands for: on axis 1
 
     LL = []
     init = tf.initialize_all_variables()

@@ -74,11 +74,14 @@ def main():
     b2 = np.zeros(K)
     LL_rms = []
     CR_rms = []
+    # initial learning rate:
     lr0 = 0.001 # if you set this too high you'll get NaN!
+    # we need to store a cache for each of the weight variables:
     cache_W2 = 0
     cache_b2 = 0
     cache_W1 = 0
     cache_b1 = 0
+    # we also need a decay rate parameter and an epsilon
     decay_rate = 0.999
     eps = 0.0000000001
     for i in xrange(max_iter):
@@ -88,7 +91,7 @@ def main():
             pYbatch, Z = forward(Xbatch, W1, b1, W2, b2)
             # print "first batch cost:", cost(pYbatch, Ybatch)
 
-            # updates
+            # updates -- the part that's different
             gW2 = derivative_w2(Z, Ybatch, pYbatch) + reg*W2
             cache_W2 = decay_rate*cache_W2 + (1 - decay_rate)*gW2*gW2
             W2 -= lr0 * gW2 / (np.sqrt(cache_W2) + eps)
